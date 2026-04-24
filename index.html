@@ -77,6 +77,9 @@
  
     /* CARD CONFIGURACIÓN */
     .card-config {
+      display: none; /* Esto hace que nadie la vea al entrar normalmente */
+      width: 100%;
+      background: rgba(255,255,255,0.08);
       width: 100%;
       background: rgba(255,255,255,0.08);
       border: 1.5px solid rgba(255,255,255,0.15);
@@ -667,6 +670,17 @@
     document.getElementById('inputCelda').addEventListener('keydown', e => {
       if (e.key === 'Enter') actualizarDesdeSheets();
     });
+
+    const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('admin')) {
+  document.querySelector('.card-config').style.display = 'flex';
+}
+
+    window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('sheets_url')) {
+    actualizarDesdeSheets();
+  }
+});
   </script>
 </body>
 </html>
