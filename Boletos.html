@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Boletos para Reciclar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --azul: #1c3f6e;
+      --azul-claro: #2a5298;
+      --amarillo: #f7c52e;
+      --amarillo-claro: #fde06a;
+      --amarillo-oscuro: #d4a017;
+      --blanco: #ffffff;
+    }
+ 
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+    body {
+      background: var(--azul);
+      font-family: 'Lato', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+ 
+    .wave-top, .wave-bottom {
+      position: fixed; left: 0; right: 0;
+      pointer-events: none; z-index: 0;
+    }
+    .wave-top { top: 0; }
+    .wave-bottom { bottom: 0; }
+ 
+    .container {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 680px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 28px;
+    }
+ 
+    /* HEADER */
+    .header {
+      text-align: center;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 14px;
+    }
+ 
+    .bus-icon {
+      font-size: 52px; line-height: 1;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+      animation: balanceo 4s ease-in-out infinite;
+    }
+ 
+    @keyframes balanceo {
+      0%, 100% { transform: rotate(-2deg); }
+      50%       { transform: rotate(2deg); }
+    }
+ 
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(36px, 7vw, 62px);
+      color: var(--blanco); font-weight: 900; line-height: 1.1;
+    }
+ 
+    h1 em { font-style: normal; color: var(--amarillo); }
+ 
+    .subtitulo {
+      font-size: 16px; color: rgba(255,255,255,0.65);
+      font-weight: 300; max-width: 420px; line-height: 1.6;
+    }
+ 
+    /* CARD CONFIGURACIÓN */
+    .card-config {
+      width: 100%;
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+ 
+    .config-titulo {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+ 
+    .config-titulo span { font-size: 14px; }
+ 
+    .config-fila {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+ 
+    .input-url {
+      flex: 1;
+      min-width: 200px;
+      background: rgba(255,255,255,0.1);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 100px;
+      padding: 11px 20px;
+      color: var(--blanco);
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+ 
+    .input-url:focus { border-color: var(--amarillo); }
+    .input-url::placeholder { color: rgba(255,255,255,0.3); }
+ 
+    .input-celda {
+      width: 90px;
+      background: rgba(255,255,255,0.1);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 100px;
+      padding: 11px 16px;
+      color: var(--blanco);
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+ 
+    .input-celda:focus { border-color: var(--amarillo); }
+ 
+    .config-ayuda {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.5;
+    }
+ 
+    .config-ayuda a {
+      color: var(--amarillo-claro);
+      text-decoration: none;
+    }
+ 
+    .config-ayuda a:hover { text-decoration: underline; }
+ 
+    /* CARD PRINCIPAL */
+    .card {
+      width: 100%;
+      background: var(--blanco);
+      border-radius: 28px;
+      padding: 40px 44px 36px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      display: flex; flex-direction: column; gap: 30px;
+    }
+ 
+    .contador-wrap {
+      text-align: center;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+ 
+    .contador-etiqueta {
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: rgba(28,63,110,0.4);
+    }
+ 
+    .contador-numero {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(58px, 11vw, 96px);
+      font-weight: 900; color: var(--azul); line-height: 1;
+      transition: color 0.3s;
+    }
+ 
+    .contador-numero.animando { color: var(--amarillo-oscuro); }
+ 
+    .contador-meta {
+      font-size: 15px; color: rgba(28,63,110,0.45);
+    }
+    .contador-meta strong { color: var(--azul); font-weight: 700; }
+ 
+    /* BARRA */
+    .barra-section { display: flex; flex-direction: column; gap: 12px; }
+ 
+    .barra-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+ 
+    .barra-texto {
+      font-family: 'Fraunces', serif;
+      font-size: 18px; font-weight: 700; color: var(--azul);
+    }
+ 
+    .barra-pct {
+      font-family: 'Fraunces', serif;
+      font-size: 22px; font-weight: 900; color: var(--amarillo-oscuro);
+    }
+ 
+    .barra-pista {
+      width: 100%; height: 34px;
+      background: #e8f0fb; border-radius: 100px;
+      overflow: hidden; border: 2px solid #d0dff5;
+    }
+ 
+    .barra-relleno {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, var(--amarillo-oscuro) 0%, var(--amarillo) 55%, var(--amarillo-claro) 100%);
+      width: 0%;
+      transition: width 0.7s cubic-bezier(0.34, 1.2, 0.64, 1);
+      position: relative; overflow: hidden;
+    }
+ 
+    .barra-relleno::after {
+      content: '';
+      position: absolute; top: 0; left: -80%;
+      width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+      animation: brillo 2.4s ease-in-out infinite;
+    }
+ 
+    @keyframes brillo {
+      0%   { left: -80%; }
+      100% { left: 180%; }
+    }
+ 
+    .barra-marcas { display: flex; justify-content: space-between; }
+    .barra-marcas span {
+      font-size: 11px; color: rgba(28,63,110,0.35); font-weight: 700;
+    }
+ 
+    /* STATS */
+    .stats-fila { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+ 
+    .stat-item {
+      background: #f0f5ff; border-radius: 16px;
+      padding: 18px 20px;
+      display: flex; align-items: center; gap: 14px;
+      border: 1.5px solid #dde8f8;
+      transition: background 0.2s, border-color 0.2s;
+    }
+ 
+    .stat-item:hover { background: #e3eeff; border-color: #b8cff5; }
+ 
+    .stat-emoji { font-size: 28px; flex-shrink: 0; }
+ 
+    .stat-info { display: flex; flex-direction: column; gap: 2px; }
+ 
+    .stat-numero {
+      font-family: 'Fraunces', serif;
+      font-size: 28px; font-weight: 900; color: var(--azul); line-height: 1;
+    }
+ 
+    .stat-nombre {
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.5px; color: rgba(28,63,110,0.5);
+      text-transform: uppercase;
+    }
+ 
+    /* BOTÓN ACTUALIZAR */
+    .boton-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+ 
+    .btn-actualizar {
+      font-family: 'Lato', sans-serif;
+      font-size: 15px; font-weight: 700;
+      padding: 15px 40px;
+      border-radius: 100px; border: none;
+      cursor: pointer;
+      background: var(--amarillo);
+      color: var(--azul);
+      box-shadow: 0 4px 18px rgba(247,197,46,0.4);
+      transition: all 0.2s;
+      display: flex; align-items: center; gap: 10px;
+    }
+ 
+    .btn-actualizar:hover {
+      background: var(--amarillo-claro);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(247,197,46,0.5);
+    }
+ 
+    .btn-actualizar:active { transform: translateY(0); }
+ 
+    .btn-actualizar.cargando {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+ 
+    .spinner {
+      width: 18px; height: 18px;
+      border: 3px solid rgba(28,63,110,0.25);
+      border-top-color: var(--azul);
+      border-radius: 50%;
+      animation: girar 0.7s linear infinite;
+      display: none;
+    }
+ 
+    .btn-actualizar.cargando .spinner { display: block; }
+    .btn-actualizar.cargando .btn-icono { display: none; }
+ 
+    @keyframes girar { to { transform: rotate(360deg); } }
+ 
+    .ultima-actualizacion {
+      font-size: 12px;
+      color: rgba(28,63,110,0.4);
+      text-align: center;
+    }
+ 
+    /* STATUS */
+    .status {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 100px;
+      display: none;
+    }
+ 
+    .status.error {
+      display: inline-block;
+      background: #fff0f0;
+      color: #c0392b;
+      border: 1.5px solid #f5c6c6;
+    }
+ 
+    .status.ok {
+      display: inline-block;
+      background: #f0fff4;
+      color: #27ae60;
+      border: 1.5px solid #b2e8c8;
+    }
+ 
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--azul);
+      color: var(--amarillo-claro);
+      border: 2px solid var(--amarillo);
+      padding: 12px 28px; border-radius: 100px;
+      font-size: 14px; font-weight: 700;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s;
+      opacity: 0; z-index: 100; white-space: nowrap;
+    }
+ 
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+ 
+    .frase {
+      text-align: center; font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      font-style: italic; font-weight: 300;
+    }
+ 
+    @media (max-width: 480px) {
+      .card { padding: 28px 22px 26px; }
+      .config-fila { flex-direction: column; }
+      .input-celda { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+ 
+  <svg class="wave-top" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="height:80px;">
+    <path d="M0,60 C360,120 1080,0 1440,60 L1440,0 L0,0 Z" fill="rgba(255,255,255,0.05)"/>
+  </svg>
+  <svg class="wave-bottom" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="height:80px;">
+    <path d="M0,60 C360,0 1080,120 1440,60 L1440,120 L0,120 Z" fill="rgba(255,255,255,0.05)"/>
+  </svg>
+ 
+  <div class="container">
+ 
+    <div class="header">
+      <div class="bus-icon">🚌</div>
+      <h1>Un millón de boletos<br>para <em>reciclar</em></h1>
+      <p class="subtitulo">Cada boleto de ómnibus cuenta. Juntos llegamos a 1.000.000 y le damos una segunda vida al papel.</p>
+    </div>
+ 
+    <!-- Configuración Google Sheets -->
+    <div class="card-config">
+      <div class="config-titulo">
+        <span>📊</span> Conectar con Google Sheets
+      </div>
+      <div class="config-fila">
+        <input
+          class="input-url"
+          type="text"
+          id="inputUrl"
+          placeholder="Pegá la URL de tu Google Sheet aquí..."
+        />
+        <input
+          class="input-celda"
+          type="text"
+          id="inputCelda"
+          value="A1"
+          placeholder="Celda"
+          maxlength="6"
+        />
+      </div>
+      <div class="config-ayuda">
+        El sheet debe ser público. En Google Sheets: <strong style="color:rgba(255,255,255,0.6)">Archivo → Compartir → Publicar en la web</strong> (o compartir como "Cualquier persona con el enlace puede ver").
+      </div>
+    </div>
+ 
+    <!-- Card principal -->
+    <div class="card">
+ 
+      <div class="contador-wrap">
+        <div class="contador-etiqueta">Boletos recolectados</div>
+        <div class="contador-numero" id="contadorNumero">—</div>
+        <div class="contador-meta">de <strong>1.000.000</strong> boletos</div>
+      </div>
+ 
+      <div class="barra-section">
+        <div class="barra-header">
+          <div class="barra-texto">Progreso hacia la meta 🎯</div>
+          <div class="barra-pct" id="barraPct">—</div>
+        </div>
+        <div class="barra-pista">
+          <div class="barra-relleno" id="barraRelleno"></div>
+        </div>
+        <div class="barra-marcas">
+          <span>0</span>
+          <span>250 mil</span>
+          <span>500 mil</span>
+          <span>750 mil</span>
+          <span>1 millón</span>
+        </div>
+      </div>
+ 
+      <div class="stats-fila">
+        <div class="stat-item">
+          <div class="stat-emoji">📦</div>
+          <div class="stat-info">
+            <div class="stat-numero" id="statRecolectados">—</div>
+            <div class="stat-nombre">Recolectados</div>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-emoji">♻️</div>
+          <div class="stat-info">
+            <div class="stat-numero" id="statFaltan">—</div>
+            <div class="stat-nombre">Faltan</div>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="boton-wrap">
+        <button class="btn-actualizar" id="btnActualizar" onclick="actualizarDesdeSheets()">
+          <div class="spinner"></div>
+          <span class="btn-icono">🔄</span>
+          Actualizar desde Sheets
+        </button>
+        <div class="ultima-actualizacion" id="ultimaActualizacion">Todavía no se cargaron datos</div>
+        <div class="status" id="statusMsg"></div>
+      </div>
+ 
+    </div>
+ 
+    <p class="frase">🌱 Por cada boleto reciclado, un poquito menos de residuo en nuestra ciudad.</p>
+ 
+  </div>
+ 
+  <div class="toast" id="toast"></div>
+ 
+  <script>
+    const META = 1000000;
+    let valorActual = 0;
+ 
+    // ── Extraer Sheet ID desde cualquier formato de URL de Google Sheets ──
+    function extraerSheetId(url) {
+      const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+      return match ? match[1] : null;
+    }
+ 
+    // ── Convertir nombre de celda (ej: "B3") a fila/columna para la API ──
+    function parsearCelda(celda) {
+      const m = celda.trim().toUpperCase().match(/^([A-Z]+)(\d+)$/);
+      if (!m) return null;
+      // Convertir letras de columna a número (A=1, B=2, ... Z=26, AA=27...)
+      let col = 0;
+      for (const c of m[1]) col = col * 26 + (c.charCodeAt(0) - 64);
+      const fila = parseInt(m[2]);
+      return { fila, col, ref: m[0] }; // ref = "A1", "B3", etc.
+    }
+ 
+    async function actualizarDesdeSheets() {
+      const urlRaw  = document.getElementById('inputUrl').value.trim();
+      const celdaRaw = document.getElementById('inputCelda').value.trim() || 'A1';
+ 
+      if (!urlRaw) {
+        mostrarStatus('error', '⚠️ Pegá la URL de tu Google Sheet primero.');
+        return;
+      }
+ 
+      const sheetId = extraerSheetId(urlRaw);
+      if (!sheetId) {
+        mostrarStatus('error', '⚠️ URL inválida. Copiá la URL completa de Google Sheets.');
+        return;
+      }
+ 
+      const celda = parsearCelda(celdaRaw);
+      if (!celda) {
+        mostrarStatus('error', '⚠️ Celda inválida. Usá formato como A1, B3, etc.');
+        return;
+      }
+ 
+      // Estado de carga
+      const btn = document.getElementById('btnActualizar');
+      btn.classList.add('cargando');
+      btn.disabled = true;
+      mostrarStatus('', '');
+ 
+      try {
+        // Usamos la API pública de exportación de Google Sheets (CSV)
+        // No requiere API key, solo que el sheet sea público o compartido
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&cachebust=${Date.now()}`;
+ 
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status} — ¿El sheet es público?`);
+ 
+        const csv = await resp.text();
+        const filas = csv.split('\n').map(f => f.split(','));
+ 
+        const filaIdx = celda.fila - 1;
+        const colIdx  = celda.col - 1;
+ 
+        if (filaIdx >= filas.length || colIdx >= filas[filaIdx].length) {
+          throw new Error(`La celda ${celda.ref} no existe en el sheet.`);
+        }
+ 
+        // Limpiar el valor: quitar comillas, espacios, puntos y comas de miles
+        const rawVal = filas[filaIdx][colIdx]
+          .replace(/"/g, '')
+          .replace(/\s/g, '')
+          .replace(/,/g, '');   // coma decimal o miles según locale
+        
+        // Intentar parsear (acepta punto decimal también)
+        const numero = parseFloat(rawVal.replace(/\./g, '').replace(',', '.')) || parseInt(rawVal);
+ 
+        if (isNaN(numero)) {
+          throw new Error(`El valor "${rawVal}" en ${celda.ref} no es un número.`);
+        }
+ 
+        const anterior = valorActual;
+        valorActual = Math.max(0, Math.round(numero));
+ 
+        actualizarUI(anterior !== valorActual);
+ 
+        const ahora = new Date();
+        const hora = ahora.toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        document.getElementById('ultimaActualizacion').textContent = `Última actualización: ${hora}`;
+ 
+        const diff = valorActual - anterior;
+        if (anterior === 0 && valorActual === 0) {
+          mostrarStatus('ok', `✅ Conectado — la celda ${celda.ref} vale 0`);
+        } else if (diff > 0) {
+          mostrarStatus('ok', `✅ +${diff.toLocaleString('es-UY')} boletos nuevos`);
+          mostrarToast(`🎟️ +${diff.toLocaleString('es-UY')} boletos desde Sheets`);
+        } else if (diff < 0) {
+          mostrarStatus('ok', `✅ Actualizado (${Math.abs(diff).toLocaleString('es-UY')} menos)`);
+        } else {
+          mostrarStatus('ok', `✅ Sin cambios — ${valorActual.toLocaleString('es-UY')} boletos`);
+        }
+ 
+      } catch (err) {
+        console.error(err);
+        mostrarStatus('error', `❌ ${err.message}`);
+        mostrarToast('❌ No se pudo leer el sheet');
+      } finally {
+        btn.classList.remove('cargando');
+        btn.disabled = false;
+      }
+    }
+ 
+    function actualizarUI(animar = false) {
+      const pct = Math.min((valorActual / META) * 100, 100);
+ 
+      const el = document.getElementById('contadorNumero');
+      if (animar) {
+        el.classList.add('animando');
+        setTimeout(() => el.classList.remove('animando'), 500);
+      }
+      animarNumero(el, parsearNumUI(el.textContent), valorActual, 600);
+ 
+      document.getElementById('barraRelleno').style.width = pct + '%';
+ 
+      let pctTexto;
+      if (pct === 0) pctTexto = '0%';
+      else if (pct < 0.01) pctTexto = pct.toFixed(4) + '%';
+      else if (pct < 0.1)  pctTexto = pct.toFixed(3) + '%';
+      else if (pct < 1)    pctTexto = pct.toFixed(2) + '%';
+      else if (pct < 10)   pctTexto = pct.toFixed(1) + '%';
+      else                  pctTexto = Math.round(pct) + '%';
+      document.getElementById('barraPct').textContent = pctTexto;
+ 
+      animarNumero(document.getElementById('statRecolectados'), parsearNumUI(document.getElementById('statRecolectados').textContent), valorActual, 500);
+ 
+      const faltan = Math.max(0, META - valorActual);
+      animarNumero(document.getElementById('statFaltan'), parsearNumUI(document.getElementById('statFaltan').textContent), faltan, 500);
+    }
+ 
+    function parsearNumUI(txt) {
+      return parseInt(txt.replace(/\./g,'').replace(/,/g,'')) || 0;
+    }
+ 
+    function animarNumero(el, desde, hasta, duracion) {
+      if (isNaN(desde)) desde = 0;
+      const inicio = performance.now();
+      const rango = hasta - desde;
+      function paso(ahora) {
+        const transcurrido = ahora - inicio;
+        const progreso = Math.min(transcurrido / duracion, 1);
+        const ease = 1 - Math.pow(1 - progreso, 3);
+        el.textContent = Math.round(desde + rango * ease).toLocaleString('es-UY');
+        if (progreso < 1) requestAnimationFrame(paso);
+      }
+      requestAnimationFrame(paso);
+    }
+ 
+    function mostrarStatus(tipo, msg) {
+      const el = document.getElementById('statusMsg');
+      el.className = 'status';
+      if (tipo) {
+        el.classList.add(tipo);
+        el.textContent = msg;
+      }
+    }
+ 
+    let toastTimer;
+    function mostrarToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+    }
+ 
+    // Guardar URL y celda en localStorage para no tener que reingresarlos
+    document.getElementById('inputUrl').addEventListener('input', e => {
+      localStorage.setItem('sheets_url', e.target.value);
+    });
+    document.getElementById('inputCelda').addEventListener('input', e => {
+      localStorage.setItem('sheets_celda', e.target.value);
+    });
+ 
+    // Restaurar al cargar
+    const urlGuardada   = localStorage.getItem('sheets_url');
+    const celdaGuardada = localStorage.getItem('sheets_celda');
+    if (urlGuardada)   document.getElementById('inputUrl').value   = urlGuardada;
+    if (celdaGuardada) document.getElementById('inputCelda').value = celdaGuardada;
+ 
+    // Enter en el input de celda dispara actualizar
+    document.getElementById('inputCelda').addEventListener('keydown', e => {
+      if (e.key === 'Enter') actualizarDesdeSheets();
+    });
+  </script>
+</body>
+</html>
